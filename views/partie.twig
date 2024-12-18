@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouvelle Construction</title>
+    <script src="/socket.io/socket.io.js"></script> <!-- Socket.io -->
+</head>
+<body>
+    <center>
+        <h2>Nouvelle construction</h2>
+        <label for="idniveau">Id Niveau:</label>
+        <input type="text" id="idniveau" name="idniveau" required><br><br>
+        
+        <button onclick="construire()">Construire</button>
+    </center>
+
+    <!-- Conteneur pour afficher les résultats sous le formulaire -->
+    <div id="resultats" style="margin-top: 20px; text-align: center;"></div>
+
+    <script>
+        // Connexion à Socket.IO
+        const socket = io.connect();
+
+        // Écoute de l'événement "construire" pour afficher les niveaux non construits
+        socket.on('construire', (niveaux) => {
+            const resultatsDiv = document.getElementById('resultats');  // Conteneur pour les résultats
+            niveaux.forEach((niveau) => {
+                // Créer un nouvel élément p pour afficher chaque niveau
+                const p = document.createElement("p");
+
+                // Insérer les informations du niveau dans l'élément p
+                p.innerHTML = `
+                    <center>
+                        <b>Nom partie :</b> ${niveau.nom}<br>
+                        <b>ID :</b> ${niveau._id}<br>
+                        <b>Nom :</b> ${niveau.nom}<br>
+                        <b>Nombre de chambres :</b> ${niveau.nbr_chambre}<br>
+                        <b>État de construction :</b> ${niveau.etat_construction ? 'Construit' : 'Non construit'}<br>
+                        <b>ID du bâtiment :</b> ${niveau.id_batiment}<br><br>
+                    </center>
+                `;
+                
+                // Ajouter l'élément p à la div resultats
+                resultatsDiv.appendChild(p);
+            });
+        });
+
+        // Fonction pour émettre l'ID du niveau pour la construction
+        function construire() {
+            const idniveau = document.getElementById('idniveau').value;
+            socket.emit('construire', { idniveau: idniveau });
+        }
+    </script>
+</body>
+</html>

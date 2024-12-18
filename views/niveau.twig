@@ -1,0 +1,37 @@
+<html lang="fr">
+<head>
+    <script src="/socket.io/socket.io.js"></script> <!-- Socket.io -->
+</head>
+<body>
+    <center>
+        <h2>Nouvelle construction</h2>
+        <label for="idniveau">Id Niveau:</label>
+        <input type="text" id="idniveau" name="idniveau" required><br><br>
+        
+        <button onclick="construire()">Construire</button>
+    </center>
+
+    <script>
+        const socket = io.connect();
+
+        socket.on('construire', (niveaux) => {
+            niveaux.forEach((niveau) => {
+                const p = document.createElement('p');
+                p.innerHTML = `
+                    <b>ID :</b> ${niveau._id}<br>
+                    <b>Nom :</b> ${niveau.nom}<br>
+                    <b>Nombre de chambres :</b> ${niveau.nbr_chambre}<br>
+                    <b>État de construction :</b> ${niveau.etat_construction ? 'Construit' : 'Non construit'}<br>
+                    <b>ID du bâtiment :</b> ${niveau.id_batiment}<br><br>
+                `;
+                resultatsDiv.appendChild(p); // Ajouter chaque résultat sous les précédents
+            });
+        });
+
+        function construire() {
+            const idniveau = document.getElementById('idniveau').value;
+            socket.emit('construire', { idniveau: idniveau });
+        }
+    </script>
+</body>
+</html>
